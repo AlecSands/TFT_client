@@ -1,6 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
 import * as d3 from "d3";
+import * as fc from "d3fc";
 import './App.css';
 import { makeStyles } from '@material-ui/core/styles';
 import { Button, Grid, Card, CardHeader, CardContent, CardActions, Typography } from '@material-ui/core';
@@ -60,14 +61,22 @@ class App extends React.Component {
 
     const x = d3.scaleBand()
       .domain(stats.map(d => d.date))
-      .range([margin.left, height - margin.right])
-      .padding(0.1)
-      .round(true);
+      .range([margin.left, width - margin.right]);
+      // .padding(0.1)
+      // .round(true);
 
     const y = d3.scaleLinear()
       .domain([0, d3.max(stats, d => d.shots)])
-      .range([margin.top, width - margin.bottom])
+      .range([height - margin.bottom, margin.top])
       .interpolate(d3.interpolateRound);
+
+    const line = d3.line()
+      .x(d => x(d.date))
+      .y(d => y(d.shots));
+
+    const thisLine = line(stats);
+
+    const axisLine = "M20,20L20,380L380,380"
 
     if (loading) {
       return (<p>Loading...</p>)
@@ -77,12 +86,11 @@ class App extends React.Component {
       return (
         <div className={useStyles.root} style={{ padding: 20 }}>
           <svg viewBox="0 0 400 400" style={{maxWidth: width + "px", font: "12px sans-serif"}}>
-            <g fill="steelblue">
-              {stats.map(d => <rect y={y(d3.max(stats, d => d.shots)) - y(d.shots)} x={x(d.date)} height={y(d.shots)} width={x.bandwidth()}></rect>)}
+            <path d={thisLine} fill="none" stroke="steelblue" strokeWidth="1.5" strokeMiterlimit="1"></path>
+            <g fill="steelblue" textAnchor="end" transform={"translate(3, 15)"}>
+              {stats.map(d => <text y={y(d.shots)} x={x(d.date)} dy="0.35em">{d.shots}</text>)}
             </g>
-            <g fill="white" textAnchor="end" transform={"translate(" + (x.bandwidth() / 2) + ", 10)"}>
-              {stats.map(d => <text y={y(d3.max(stats, d => d.shots)) - y(d.shots)} x={x(d.date)} dy="0.35em">{d.shots}</text>)}
-            </g>
+            <path fill="none" stroke="steelblue" strokeWidth="1.5" d={axisLine}></path>
           </svg>
         </div>
       )
