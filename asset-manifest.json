@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/TFT_client/static/css/main.5f361e03.chunk.css",
-    "main.js": "/TFT_client/static/js/main.188e5156.chunk.js",
-    "main.js.map": "/TFT_client/static/js/main.188e5156.chunk.js.map",
+    "main.js": "/TFT_client/static/js/main.8b0090c3.chunk.js",
+    "main.js.map": "/TFT_client/static/js/main.8b0090c3.chunk.js.map",
     "runtime-main.js": "/TFT_client/static/js/runtime-main.89a057e5.js",
     "runtime-main.js.map": "/TFT_client/static/js/runtime-main.89a057e5.js.map",
     "static/js/2.b75b102e.chunk.js": "/TFT_client/static/js/2.b75b102e.chunk.js",
     "static/js/2.b75b102e.chunk.js.map": "/TFT_client/static/js/2.b75b102e.chunk.js.map",
     "index.html": "/TFT_client/index.html",
-    "precache-manifest.6b4438ba074a0396631cb17b8eec2f21.js": "/TFT_client/precache-manifest.6b4438ba074a0396631cb17b8eec2f21.js",
+    "precache-manifest.48dfa005416aaf0d7d003ad715404e5a.js": "/TFT_client/precache-manifest.48dfa005416aaf0d7d003ad715404e5a.js",
     "service-worker.js": "/TFT_client/service-worker.js",
     "static/css/main.5f361e03.chunk.css.map": "/TFT_client/static/css/main.5f361e03.chunk.css.map",
     "static/js/2.b75b102e.chunk.js.LICENSE.txt": "/TFT_client/static/js/2.b75b102e.chunk.js.LICENSE.txt"
@@ -17,6 +17,6 @@
     "static/js/runtime-main.89a057e5.js",
     "static/js/2.b75b102e.chunk.js",
     "static/css/main.5f361e03.chunk.css",
-    "static/js/main.188e5156.chunk.js"
+    "static/js/main.8b0090c3.chunk.js"
   ]
 }
