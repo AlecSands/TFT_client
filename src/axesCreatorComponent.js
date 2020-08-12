@@ -4,21 +4,16 @@ import statsGenerator from './statsGenerator';
 
 function createAxes(thing) {
   // define vars
-  const walterId = thing.state.walterId;
-  const alecId = thing.state.alecId;
-  const zachId = thing.state.zachId;
-  const height = thing.state.height;
-  const width = thing.state.width;
-  const margin = thing.state.margin;
-  let stats = thing.state.stats;
-  // reformat data to work with d3 axes
-  stats = stats.map(d => {
-    let data = d;
-    data.goals = parseFloat(data.goals);
-    return data;
-  })
+  const walterId = thing.props.props.walterId;
+  const alecId = thing.props.props.alecId;
+  const zachId = thing.props.props.zachId;
+  const height = thing.props.props.height;
+  const width = thing.props.props.width;
+  const margin = thing.props.props.margin;
+  let stats = thing.props.props.stats;
+  let attribute = thing.props.attribute;
 
-  let broStats = statsGenerator(stats, walterId, zachId, alecId, 'goals');
+  let broStats = statsGenerator(stats, walterId, zachId, alecId, attribute);
 
   // functions for x and y axes
   const xAxis = g => g
@@ -39,7 +34,7 @@ function createAxes(thing) {
     .range([margin.left, width - margin.right]);
 
   const y = d3.scaleLinear()
-    .domain([0, d3.max(broStats.w, d => d.val)])
+    .domain([0, d3.max([...broStats.z, ...broStats.a, ...broStats.w, ...broStats.o], d => d.val)])
     .range([height - margin.bottom, margin.top])
     .interpolate(d3.interpolateRound);
 

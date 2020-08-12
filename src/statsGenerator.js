@@ -1,16 +1,16 @@
 import * as d3 from "d3";
 import * as fc from "d3fc";
 
-function statsGenerator (stats, walterId, zachId, alecId) {
+function statsGenerator (stats, walterId, zachId, alecId, attr) {
   const walterStats = stats.filter(d => d.player === walterId);
   const alecStats = stats.filter(d => d.player === alecId);
   const zachStats = stats.filter(d => d.player === zachId);
   const oStats = stats.filter(d => d.player !== walterId && d.player !== zachId && d.player !== alecId);
 
-  const walterShotsData = walterStats.map(d => {return {date: d.date, val: d.goals, dateLabel: d.dateLabel}});
-  const alecShotsData = alecStats.map(d => {return {date: d.date, val: d.goals, dateLabel: d.dateLabel}});
-  const zachShotsData = zachStats.map(d => {return {date: d.date, val: d.goals, dateLabel: d.dateLabel}});
-  const oShotsData = oStats.map(d => {return {date: d.date, val: d.goals, dateLabel: d.dateLabel}});
+  const walterShotsData = walterStats.map(d => {return {date: d.date, val: d[attr], dateLabel: d.dateLabel}});
+  const alecShotsData = alecStats.map(d => {return {date: d.date, val: d[attr], dateLabel: d.dateLabel}});
+  const zachShotsData = zachStats.map(d => {return {date: d.date, val: d[attr], dateLabel: d.dateLabel}});
+  const oShotsData = oStats.map(d => {return {date: d.date, val: d[attr], dateLabel: d.dateLabel}});
 
   function calcDAve (pData) {
     let newData = [];
@@ -46,7 +46,6 @@ function statsGenerator (stats, walterId, zachId, alecId) {
   const aData = calcDAve(alecShotsData);
   const zData = calcDAve(zachShotsData);
   const oData = calcDAve(oShotsData);
-  console.log(wData);
   return{z: zData, a: aData, w: wData, o: oData};
 }
 

@@ -1,5 +1,4 @@
 import React from 'react';
-import logo from './logo.svg';
 import * as d3 from "d3";
 import * as fc from "d3fc";
 import './App.css';
@@ -7,6 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Button, Grid, Card, CardHeader, CardContent, CardActions, Typography } from '@material-ui/core';
 import createAxes from './axesCreator';
 import statsGenerator from './statsGenerator';
+import LineChart from './components/LineChart';
 
 class App extends React.Component {
   constructor(props) {
@@ -86,13 +86,11 @@ class App extends React.Component {
     const width = this.state.width;
     const margin = this.state.margin;
 
-    let broStats = statsGenerator(stats, walterId, zachId, alecId);
+    let broStats = statsGenerator(stats, walterId, zachId, alecId, 'goals');
 
     const abstractLine = d3.line()
       .x(d => (x(d.date) + x.bandwidth()/2 ))
       .y(d => y(d.val));
-
-
 
     const x = d3.scaleBand()
       .domain(broStats.w.map(d => d.date))
@@ -104,8 +102,6 @@ class App extends React.Component {
       .domain([0, d3.max(broStats.w, d => d.val)])
       .range([height - margin.bottom, margin.top])
       .interpolate(d3.interpolateRound);
-
-    // console.log(wData);
 
     const walterLine = abstractLine(broStats.w);
     const alecLine = abstractLine(broStats.a);
@@ -123,19 +119,14 @@ class App extends React.Component {
     } else {
       return (
         <div className={useStyles.root} style={{ padding: 20 }}>
-          <h3>Average Goals per Day</h3>
-          <svg viewBox="0 0 1200 400" style={{maxWidth: width + "px", font: "12px sans-serif"}}>
-            <path d={walterLine} fill="none" stroke="steelblue" strokeWidth="1.5" strokeMiterlimit="1"></path>
-            <path d={alecLine} fill="none" stroke="red" strokeWidth="1.5" strokeMiterlimit="1"></path>
-            <path d={zachLine} fill="none" stroke="green" strokeWidth="1.5" strokeMiterlimit="1"></path>
-            <path d={oLine} fill="none" stroke="lightgray" strokeWidth="1.5" strokeMiterlimit="1"></path>
-            <g ref={this.xRef}></g>
-            <g ref={this.yRef}></g>
-          </svg>
           <p>Walter = blue</p>
           <p>Zach = green</p>
           <p>Alec = red</p>
           <p>Opponents = gray</p>
+          <LineChart props={this.state} attribute="goals"/>
+          <LineChart props={this.state} attribute="assists"/>
+          <LineChart props={this.state} attribute="shots"/>
+          <LineChart props={this.state} attribute="saves"/>
         </div>
       )
     }
