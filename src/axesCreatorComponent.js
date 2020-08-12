@@ -34,7 +34,7 @@ function createAxes(thing) {
     .range([margin.left, width - margin.right]);
 
   const y = d3.scaleLinear()
-    .domain([0, d3.max([...broStats.z, ...broStats.a, ...broStats.w, ...broStats.o], d => d.val)])
+    .domain([d3.min([...broStats.z, ...broStats.a, ...broStats.w, ...broStats.o], d => d.val), d3.max([...broStats.z, ...broStats.a, ...broStats.w, ...broStats.o], d => d.val)])
     .range([height - margin.bottom, margin.top])
     .interpolate(d3.interpolateRound);
 

@@ -4,6 +4,12 @@ import * as fc from "d3fc";
 import './App.css';
 import { makeStyles } from '@material-ui/core/styles';
 import { Button, Grid, Card, CardHeader, CardContent, CardActions, Typography } from '@material-ui/core';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+
 import createAxes from './axesCreator';
 import statsGenerator from './statsGenerator';
 import LineChart from './components/LineChart';
@@ -20,11 +26,11 @@ class App extends React.Component {
       margin: {left: 30, top: 30, right: 30, bottom: 30},
       alecId: '76561198160373236',
       walterId: '76561198032655243',
-      zachId: '76561198065784767'
+      zachId: '76561198065784767',
+      attribute: 'goals'
     };
-    this.xRef = React.createRef();
-    this.yRef = React.createRef();
     this.useStyles = this.useStyles.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
 
   componentDidMount() {
@@ -45,7 +51,7 @@ class App extends React.Component {
           stats: results
         });
         // create the axes
-        createAxes(this);
+        // createAxes(this);
       })
       .catch((error) => {
         console.error(error.message)
@@ -66,6 +72,13 @@ class App extends React.Component {
     }));
   }
 
+  handleChange(event) {
+    console.log(event);
+    this.setState({
+      attribute: event.target.value
+    });
+  }
+
   render() {
     const walterId = this.state.walterId;
     const alecId = this.state.alecId;
@@ -80,13 +93,20 @@ class App extends React.Component {
     })
     const error = this.state.error;
     const useStyles = this.useStyles;
-
+    const variable = this.state.attribute;
+    const handleChange = this.handleChange;
 
     const height = this.state.height;
     const width = this.state.width;
     const margin = this.state.margin;
 
     let broStats = statsGenerator(stats, walterId, zachId, alecId, 'goals');
+    let statsTypes;
+    if(stats.length>0) {
+      statsTypes = Object.keys(stats[0]);
+    }
+
+    console.log(statsTypes);
 
     const abstractLine = d3.line()
       .x(d => (x(d.date) + x.bandwidth()/2 ))
@@ -119,16 +139,24 @@ class App extends React.Component {
     } else {
       return (
         <div className={useStyles.root} style={{ padding: 20 }}>
+          <FormControl className={useStyles.formControl}>
+              <InputLabel id="demo-simple-select-label">Age</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={variable}
+                onChange={handleChange}
+              >
+              <MenuItem value={'goals'}>Goals</MenuItem>
+              {statsTypes.map(d => <MenuItem value={d}>{d}</MenuItem>)}
+            </Select>
+          </FormControl>
+
+          <LineChart props={this.state} attribute={variable}/>
           <p>Walter = blue</p>
           <p>Zach = green</p>
           <p>Alec = red</p>
           <p>Opponents = gray</p>
-          <LineChart props={this.state} attribute="goals"/>
-          <LineChart props={this.state} attribute="assists"/>
-          <LineChart props={this.state} attribute="shots"/>
-          <LineChart props={this.state} attribute="saves"/>
-          <LineChart props={this.state} attribute="score"/>
-          <LineChart props={this.state} attribute="shooting_percent"/>
         </div>
       )
     }

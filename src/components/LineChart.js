@@ -15,6 +15,10 @@ class LineChart extends React.Component {
     createAxes(this);
   }
 
+  componentDidUpdate() {
+    createAxes(this);
+  }
+
   render() {
     const walterId = this.props.props.walterId;
     const alecId = this.props.props.alecId;
