@@ -127,6 +127,8 @@ class App extends React.Component {
           <LineChart props={this.state} attribute="assists"/>
           <LineChart props={this.state} attribute="shots"/>
           <LineChart props={this.state} attribute="saves"/>
+          <LineChart props={this.state} attribute="score"/>
+          <LineChart props={this.state} attribute="shooting_percent"/>
         </div>
       )
     }
