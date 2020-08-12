@@ -5,6 +5,8 @@ import * as fc from "d3fc";
 import './App.css';
 import { makeStyles } from '@material-ui/core/styles';
 import { Button, Grid, Card, CardHeader, CardContent, CardActions, Typography } from '@material-ui/core';
+import createAxes from './axesCreator';
+import statsGenerator from './statsGenerator';
 
 class App extends React.Component {
   constructor(props) {
@@ -14,8 +16,11 @@ class App extends React.Component {
       stats: [],
       error: false,
       height: 400,
-      width: 400,
-      margin: {left: 30, top: 30, right: 30, bottom: 30}
+      width: 1200,
+      margin: {left: 30, top: 30, right: 30, bottom: 30},
+      alecId: '76561198160373236',
+      walterId: '76561198032655243',
+      zachId: '76561198065784767'
     };
     this.xRef = React.createRef();
     this.yRef = React.createRef();
@@ -23,43 +28,24 @@ class App extends React.Component {
   }
 
   componentDidMount() {
+    // get data from server
     let items = fetch('https://still-anchorage-53867.herokuapp.com/stats')
+      // convert response data to json
       .then(response => response.json())
       .then((jsonData) => {
         let results = jsonData.results;
         results.sort((d,f) => {return(parseInt(d.date) - parseInt(f.date))});
         results = results.map(d => {
-          let data = d;
-          data.date = new Date(parseInt(data.date));
-          data.date = (data.date.getMonth() + 1) + "/" + data.date.getDate() + " - " + data.date.getHours() + ":" + data.date.getMinutes();
-          return data;
+          let datatemp = new Date(parseInt(d.date));
+          d.dateLabel = (datatemp.getMonth() + 1) + "/" + datatemp.getDate();
+          return d;
         });
         this.setState({
           loading: false,
           stats: results
         });
-        const height = this.state.height;
-        const width = this.state.width;
-        const margin = this.state.margin;
-        const stats = this.state.stats;
-        const xAxis = g => g
-          .attr("transform", "translate(0, " + (height - margin.bottom) + ")")
-          .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0));
-        const yAxis = g => g
-          .attr("transform", "translate("+margin.left+", 0)")
-          .call(d3.axisLeft(y).ticks(width / 80).tickSizeOuter(0));
-
-        const x = d3.scaleBand()
-          .domain(stats.map(d => d.date))
-          .range([margin.left, width - margin.right]);
-
-        const y = d3.scaleLinear()
-          .domain([0, d3.max(stats, d => d.shots)])
-          .range([height - margin.bottom, margin.top])
-          .interpolate(d3.interpolateRound);
-
-        d3.select(this.xRef.current).call(xAxis).node()
-        d3.select(this.yRef.current).call(yAxis).node()
+        // create the axes
+        createAxes(this);
       })
       .catch((error) => {
         console.error(error.message)
@@ -81,52 +67,54 @@ class App extends React.Component {
   }
 
   render() {
+    const walterId = this.state.walterId;
+    const alecId = this.state.alecId;
+    const zachId = this.state.zachId;
     const loading = this.state.loading;
     let stats = this.state.stats;
+    stats = stats.map(d => {
+      let data = d;
+      data.goals = parseFloat(data.goals);
+      // data.date = parseInt(data.date);
+      return data;
+    })
     const error = this.state.error;
     const useStyles = this.useStyles;
-    console.log(stats);
+
 
     const height = this.state.height;
     const width = this.state.width;
     const margin = this.state.margin;
 
-    const x = d3.scaleBand()
-      .domain(stats.map(d => d.date))
-      .range([margin.left, width - margin.right]);
-      // .padding(0.1)
-      // .round(true);
-
-    const y = d3.scaleLinear()
-      .domain([0, d3.max(stats, d => d.shots)])
-      .range([height - margin.bottom, margin.top])
-      .interpolate(d3.interpolateRound);
+    let broStats = statsGenerator(stats, walterId, zachId, alecId);
 
     const abstractLine = d3.line()
       .x(d => (x(d.date) + x.bandwidth()/2 ))
       .y(d => y(d.val));
 
-    const shotsData = stats.map(d => {return {date: d.date, val: d.shots}});
 
-    const abstractLineD = abstractLine(shotsData);
+
+    const x = d3.scaleBand()
+      .domain(broStats.w.map(d => d.date))
+      .range([margin.left, width - margin.right]);
+      // .padding(0.1)
+      // .round(true);
+
+    const y = d3.scaleLinear()
+      .domain([0, d3.max(broStats.w, d => d.val)])
+      .range([height - margin.bottom, margin.top])
+      .interpolate(d3.interpolateRound);
+
+    // console.log(wData);
+
+    const walterLine = abstractLine(broStats.w);
+    const alecLine = abstractLine(broStats.a);
+    const zachLine = abstractLine(broStats.z);
+    const oLine = abstractLine(broStats.o);
 
     const line = d3.line()
       .x(d => (x(d.date) + x.bandwidth()/2 ))
       .y(d => y(d.shots));
-
-    const thisLine = line(stats);
-
-    const lineA = d3.line()
-      .x(d => (x(d.date) + x.bandwidth()/2 ))
-      .y(d => y(d.assists));
-
-    const thisLineA = lineA(stats);
-
-    const lineS = d3.line()
-      .x(d => (x(d.date) + x.bandwidth()/2 ))
-      .y(d => y(d.saves));
-
-    const thisLineS = lineS(stats);
 
     if (loading) {
       return (<p>Loading...</p>)
@@ -135,13 +123,19 @@ class App extends React.Component {
     } else {
       return (
         <div className={useStyles.root} style={{ padding: 20 }}>
-          <svg viewBox="0 0 400 400" style={{maxWidth: width + "px", font: "12px sans-serif"}}>
-            <path d={abstractLineD} fill="none" stroke="steelblue" strokeWidth="1.5" strokeMiterlimit="1"></path>
-            <path d={thisLineA} fill="none" stroke="red" strokeWidth="1.5" strokeMiterlimit="1"></path>
-            <path d={thisLineS} fill="none" stroke="green" strokeWidth="1.5" strokeMiterlimit="1"></path>
+          <h3>Average Goals per Day</h3>
+          <svg viewBox="0 0 1200 400" style={{maxWidth: width + "px", font: "12px sans-serif"}}>
+            <path d={walterLine} fill="none" stroke="steelblue" strokeWidth="1.5" strokeMiterlimit="1"></path>
+            <path d={alecLine} fill="none" stroke="red" strokeWidth="1.5" strokeMiterlimit="1"></path>
+            <path d={zachLine} fill="none" stroke="green" strokeWidth="1.5" strokeMiterlimit="1"></path>
+            <path d={oLine} fill="none" stroke="lightgray" strokeWidth="1.5" strokeMiterlimit="1"></path>
             <g ref={this.xRef}></g>
             <g ref={this.yRef}></g>
           </svg>
+          <p>Walter = blue</p>
+          <p>Zach = green</p>
+          <p>Alec = red</p>
+          <p>Opponents = gray</p>
         </div>
       )
     }
