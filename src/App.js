@@ -31,6 +31,8 @@ class App extends React.Component {
     };
     this.useStyles = this.useStyles.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.xRef = React.createRef();
+    this.yRef = React.createRef();
   }
 
   componentDidMount() {
@@ -51,7 +53,7 @@ class App extends React.Component {
           stats: results
         });
         // create the axes
-        // createAxes(this);
+        createAxes(this);
       })
       .catch((error) => {
         console.error(error.message)
@@ -108,25 +110,17 @@ class App extends React.Component {
 
     console.log(statsTypes);
 
-    const abstractLine = d3.line()
-      .x(d => (x(d.date) + x.bandwidth()/2 ))
-      .y(d => y(d.val));
-
-    const x = d3.scaleBand()
-      .domain(broStats.w.map(d => d.date))
-      .range([margin.left, width - margin.right]);
+    const x = d3.scaleLinear()
+      .domain([0, d3.max(stats, d => d.shooting_percent)])
+      .range([height - margin.bottom, margin.top])
+      .interpolate(d3.interpolateRound);
       // .padding(0.1)
       // .round(true);
 
     const y = d3.scaleLinear()
-      .domain([0, d3.max(broStats.w, d => d.val)])
+      .domain([0, d3.max(stats, d => d.assists)])
       .range([height - margin.bottom, margin.top])
       .interpolate(d3.interpolateRound);
-
-    const walterLine = abstractLine(broStats.w);
-    const alecLine = abstractLine(broStats.a);
-    const zachLine = abstractLine(broStats.z);
-    const oLine = abstractLine(broStats.o);
 
     const line = d3.line()
       .x(d => (x(d.date) + x.bandwidth()/2 ))
@@ -157,6 +151,11 @@ class App extends React.Component {
           <p>Zach = green</p>
           <p>Alec = red</p>
           <p>Opponents = gray</p>
+          <svg viewBox="0 0 1200 400" style={{maxWidth: width + "px", font: "12px sans-serif"}}>
+            {stats.map(d => <circle cx={x(d.shooting_percent)} cy={y(d.assists)} r="2"/>)}
+            <g ref={this.xRef}></g>
+            <g ref={this.yRef}></g>
+          </svg>
         </div>
       )
     }

@@ -23,23 +23,21 @@ function createAxes(thing) {
   // functions for x and y axes
   const xAxis = g => g
     .attr("transform", "translate(0, " + (height - margin.bottom) + ")")
-    .call(d3.axisBottom(x).ticks(width).tickSizeOuter(0));
+    .call(d3.axisBottom(x).ticks(4).tickSizeOuter(0));
   const yAxis = g => g
     .attr("transform", "translate("+margin.left+", 0)")
     .call(d3.axisLeft(y).ticks(width / 80).tickSizeOuter(0));
 
   // define the scales for x and y axes
-  const x = d3.scaleBand()
-    .domain(broStats.w.map(d => {
-      let dataTemp = new Date(parseInt(d.date));
-      // console.log(d.date + " " + dataTemp.getDate() + " " + dataTemp);
-      let dataFinal = (dataTemp.getMonth() + 1) + "/" + dataTemp.getDate();
-      return dataFinal;
-    }))
-    .range([margin.left, width - margin.right]);
+  const x = d3.scaleLinear()
+    .domain([0, 1])
+    .range([height - margin.bottom, margin.top])
+    .interpolate(d3.interpolateRound);
+    // .padding(0.1)
+    // .round(true);
 
   const y = d3.scaleLinear()
-    .domain([0, d3.max(broStats.w, d => d.val)])
+    .domain([0, d3.max(stats, d => d.assists)])
     .range([height - margin.bottom, margin.top])
     .interpolate(d3.interpolateRound);
 
