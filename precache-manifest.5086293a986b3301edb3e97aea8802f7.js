@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "73b984e7781577891f5b683c48e2fb00",
+    "revision": "9355eadef2fec18c6856928d074807cf",
     "url": "/TFT_client/index.html"
   },
   {
-    "revision": "49b99d81a1244351a47d",
+    "revision": "3d2ec6b8b2a06b711dd5",
     "url": "/TFT_client/static/css/main.5f361e03.chunk.css"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/TFT_client/static/js/2.d474ff84.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "49b99d81a1244351a47d",
-    "url": "/TFT_client/static/js/main.e7d80376.chunk.js"
+    "revision": "3d2ec6b8b2a06b711dd5",
+    "url": "/TFT_client/static/js/main.fc61d475.chunk.js"
   },
   {
     "revision": "09ab6ffc1fe9c7a3fff5",
